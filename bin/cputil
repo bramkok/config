@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+# Set maximum cpu clock speed to a percentage
+
+set -eu -o pipefail
+__regexp="^[0-9]+$"
+
+function __get_cpu_limit() {
+  local __limit_type="${1:-}"
+  read -r -a __cpu_limits <<< "$(cpupower frequency-info --hwlimits | tail -1)"
+  case "${__limit_type}" in
+    "minimum") echo "${__cpu_limits[0]}" ;;
+    "maximum") echo "${__cpu_limits[1]}" ;;
+    *) return 1 ;;
+  esac
+  return 0
+}
+
+function __set_cpu_frequency() {
+  local __min_frequency="${1:-}"
+  local __max_frequency="${2:-}"
+  cpupower --cpu all frequency-set --min "${__min_frequency}" \
+    --max "${__max_frequency}"
+  return 0
+}
+
+function __main() {
+  local __percentage="${1:-}"
+  local __min_limit
+  local __max_limit
+  local __stderr
+  __min_limit=$(__get_cpu_limit "minimum")
+  __max_limit=$(__get_cpu_limit "maximum")
+  local __custom_max_frequency=$((__max_limit * __percentage / 100))
+  if [[ $__custom_max_frequency -lt $__min_limit ]]; then
+    __custom_max_frequency="${__min_limit}"
+    __max_lt_min="(${__percentage}% < minimum clock speed hardware limit)"
+  fi
+  __stderr=$(__set_cpu_frequency "${__min_limit}" "${__custom_max_frequency}" 2>&1 > /dev/null)
+  # __set_cpu_frequency "${__min_limit}" "${__custom_max_frequency}"
+  if [[ -n "${__stderr:-}" ]]; then echo "${__stderr:-}" && exit 1; fi
+  echo "Maximum CPU clock speed limit is set to $((__custom_max_frequency / 1000)) MHz" \
+    "${__max_lt_min:-}"
+  return 0
+}
+
+function __throw_error() {
+  (>&2 echo "Error: Provide an integer value between 1-100 as first argument")
+  exit 1
+}
+
+if ! [[ $(command -v cpupower) ]]; then
+  (>&2 echo "Error: 'cpupower' not found") && exit 1
+elif [[ -z "${1:-}" ]]; then __throw_error
+elif ! [[ $1 =~ ${__regexp} ]]; then __throw_error
+elif [[ $1 -lt 1 || $1 -gt 100 ]]; then __throw_error
+else __main "${1:-}" && exit 0
+fi

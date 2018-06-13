@@ -1,0 +1,3 @@
+#!/bin/sh
+
+(( pacman -Qe && pacman -Qd ) | awk '{ print $1 }' )

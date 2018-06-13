@@ -1,0 +1,48 @@
+[user]
+	name = Bram Kok
+	email = bram@bramkok.com
+[color]
+	ui = always
+[github]
+	user = bramkok
+[push]
+	default = current
+[core]
+	editor = $EDITOR
+	excludesfile = ~/.gitignore
+[alias]
+	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+  l = log --oneline --graph --decorate --all
+	commend = commit --amend
+  count = rev-list --all --count
+  pl = pull
+[filter "lfs"]
+	clean = git lfs clean %f
+	smudge = git lfs smudge %f
+	required = true
+[merge]
+	tool = opendiff
+[mergetool]
+	keepBackup = false
+[diff]
+	tool = opendiff
+[difftool]
+	prompt = false
+[branch]
+	autosetupmerge = always
+[color "diff-highlight"]
+	oldNormal = red bold
+	oldHighlight = red bold 52
+	newNormal = green bold
+	newHighlight = green bold 22
+[color "diff"]
+	meta = 227
+	frag = magenta bold
+	commit = 227 bold
+	old = red bold
+	new = green bold
+	whitespace = red reverse
+[pull]
+	rebase = true
+[diff-so-fancy]
+	stripLeadingSymbols = false

@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+dmenu-recent-aliases -fn 'xos4 Terminus' -b -nb '#000000' -nf '#ffffff' -sb '#444444' -sf '#ffffff'

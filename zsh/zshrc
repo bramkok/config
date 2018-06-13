@@ -1,0 +1,127 @@
+# misc
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_CACHE_HOME="$HOME/.cache"
+export ZSH_CONFIG_DIR="$XDG_CONFIG_HOME/zsh/"
+export AWS_SHARED_CREDENTIALS_FILE="$XDG_CONFIG_HOME"/aws/credentials
+export AWS_CONFIG_FILE="$XDG_CONFIG_HOME"/aws/config
+export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
+export MACHINE_STORAGE_PATH="$XDG_DATA_HOME"/docker-machine
+export TMUX_TMPDIR="$XDG_RUNTIME_DIR"
+# $ export INPUTRC="$XDG_CONFIG_HOME"/readline/inputrc
+# $ export RXVT_SOCKET="$XDG_RUNTIME_DIR"/urxvtd
+# $ compinit -d $XDG_DATA_HOME/zsh/zcompdump-$ZSH_VERSION [155] /!\ The folder needs to exist
+
+# include
+for func in $ZSH_CONFIG_DIR/functions/*.zsh; do; source $func; done
+source $XDG_CONFIG_HOME/zsh/env.zsh
+source $XDG_CONFIG_HOME/zsh/aliases.zsh
+source $XDG_CONFIG_HOME/zsh/prompt.zsh
+
+# history
+HISTFILE=$XDG_CONFIG_HOME/zsh/history
+COMPDUMPFILE=$XDG_CONFIG_HOME/zsh/zcompdump
+HISTSIZE=10000
+SAVEHIST=10000
+setopt append_history         # allow multiple sessions to append to one history
+setopt bang_hist              # treat ! special during command expansion
+setopt extended_history       # write history in :start:elasped;command format
+setopt hist_expire_dups_first # expire duplicates first when trimming history
+setopt hist_find_no_dups      # when searching history, dont repeat
+setopt hist_ignore_dups       # ignore duplicate entries of previous events
+setopt hist_ignore_space      # prefix command with a space to skip its recording
+setopt hist_reduce_blanks     # remove extra blanks from each command added to history
+setopt hist_verify            # dont execute immediately upon history expansion
+setopt inc_append_history     # write to history file immediately, not when shell quits
+setopt share_history          # share history among all sessions
+
+# completion
+autoload -Uz compinit && compinit -d ${COMPDUMPFILE}
+setopt complete_in_word       # cd /ho/sco/tm<TAB> expands to /home/scott/tmp
+setopt auto_menu              # show completion menu on succesive tab presses
+setopt autocd                 # cd to a folder just by typing its name
+ZLE_REMOVE_SUFFIX_CHARS=$' \t\n;&' # these "eat" chars prior space after a tab complete
+setopt MENU_COMPLETE
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+
+# misc
+autoload -Uz vcs_info           # # load version control information
+setopt interactive_comments     # # allow comments in shell good for copy/paste
+unsetopt correct_all            # # i dont care for 'suggestions' from zsh
+export BLOCK_SIZE="'1"          # # add commas to file sizes
+
+# bindkey
+bindkey -v
+bindkey '\e[3~' delete-char
+bindkey '^p' history-search-backward
+bindkey '^n' history-search-forward
+bindkey ' ' magic-space
+bindkey '^[[Z' reverse-menu-complete
+
+# pyenv
+if [ $(command -v pyenv) ]; then
+  # export PATH="$HOME/.pyenv/shims:$PATH"
+  eval "$(pyenv init -)"
+  eval "$(pyenv virtualenv-init -)"
+fi
+
+# zsh-syntax-highlighting
+_zshPath="/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+if [ -f "${_zshPath}" ]; then
+  source "${_zshPath}"
+fi
+
+# git aliases
+if [ $(command -v git) ]; then
+  [ -f ~/.config/zsh/git.zsh ] && source ~/.config/zsh/git.zsh
+fi
+
+# yarn
+if [ $(command -v yarn) ]; then
+  export PATH="$(yarn global bin):$PATH"
+fi
+
+# npm
+if [ $(command -v npm) ]; then
+  export PATH="$(npm config get prefix):$PATH"
+fi
+
+# base16 shell
+if [ -d "$HOME/.base16-manager/chriskempson/base16-shell/" ]; then
+  BASE16_SHELL="$HOME/.base16-manager/chriskempson/base16-shell/"
+  [ -n "$PS1" ] && \
+      [ -s "$BASE16_SHELL/profile_helper.sh" ] && \
+          eval "$("$BASE16_SHELL/profile_helper.sh")"
+fi
+
+# fzf
+if [ $(command -v fzf) ]; then
+  [ -f /usr/share/fzf/completion.zsh ] && source /usr/share/fzf/completion.zsh
+  [ -f /usr/share/fzf/key-bindings.zsh ] && source /usr/share/fzf/key-bindings.zsh
+
+  # Setting fd as the default source for fzf
+  export FZF_DEFAULT_COMMAND='ag -g "" -f --hidden'
+
+  # To apply the command to CTRL-T as well
+  export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+
+  [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+  [ -f ~/.fzf.colors ] && source ~/.fzf.colors
+fi
+
+# fasd
+if [ $(command -v fasd) ]; then
+  # eval "$(fasd --init auto)"    # slow (60 ms)
+  alias z='fasd_cd -d'     # cd, same functionality as j in autojump
+  alias j='fasd_cd -d'     # cd, same functionality as j in autojump
+  alias jj='fasd_cd -d -i' # cd with interactive selection
+  alias v="fasd -e $EDITOR"
+  alias c="fasd -e $PAGER"
+fi
+
+function fasd_cd() {
+    (( $+commands[fasd] )) && {
+      [ -z "${_FASD_DATA}" ] && eval "$(fasd --init auto)"
+      fasd_cd "$@"
+    }
+}
+[ -f ~/.fzf.colors ] && source ~/.fzf.colors

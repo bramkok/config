@@ -1,0 +1,3 @@
+#!/bin/sh
+
+pacman -Qe | awk '{ print $1 }' | sort > "${XDG_CONFIG_HOME}/yay/packages"

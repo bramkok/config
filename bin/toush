@@ -1,0 +1,8 @@
+#!/bin/sh
+
+_edit_sh() {
+  if [ -f "${1:-}" ]; then chmod +x "${1:-}"; else exit; fi
+  if [ "$(du "${1:-}" | cut -f1)" = "0" ]; then echo "#!/bin/sh" >> "${1:-}"; fi
+}
+
+touch "${1:-}" && _edit_sh "${1:-}"

@@ -1,0 +1,9 @@
+x/.Xauthority
+zsh/history
+zsh/zcompdump
+tmux/plugins
+dunst/dunstrc
+coc/extensions/node_modules/*
+coc/extensions/db.json
+coc/extensions/yarn.lock
+configstore/update-notifier-npm.json

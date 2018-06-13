@@ -1,0 +1,46 @@
+Xft.dpi: 100.63
+Xft.antialias: true
+Xft.hinting: true
+Xft.rgba: rgb
+Xft.autohint: false
+Xft.hintstyle: hintslight
+Xft.lcdfilter: lcddefault
+
+! Disable unicode pasting mode that I dont understand
+URxvt.iso14755_52: false
+
+URxvt.depth: 32
+URxvt.letterSpace: 0
+
+URxvt*font:xft:xos4 Terminus:style=Regular:size=12
+URxvt*boldFont:xft:xos4 Terminus:style=Bold:size=12
+
+URxvt.internalBorder:  0
+URxvt*scrollBar: false
+URxvt*scrollBar_right: false
+URxvt*.termName: rxvt-unicode-256color
+
+URxvt.lineSpace: 1
+URxvt.cursorBlink:  true
+URxvt.cursorUnderline: false
+URxvt.urgentOnBell: true
+
+! Larger history limit
+URxvt.saveLines: 1000000
+
+! Perl extensions
+URxvt.perl-lib: $HOME/.config/urxvt/rel
+URxvt.perl-ext-common: default,matcher,clipboard,url-select,keyboard-select,resize-font,focus
+URxvt.url-select.underline: true
+URxvt.keyboard-select.clipboard: true
+URxvt.url-launcher: /usr/bin/firefox
+URxvt.matcher.button: 2
+URxvt.keysym.C-M-u: perl:url-select:select_next
+URxvt.keysym.M-Escape: perl:keyboard-select:activate
+URxvt.keysym.C-M-s: perl:keyboard-select:search
+
+UXTerm*faceName: Hasklig
+UXTerm*faceSize: 10
+UXTerm*scaleHeight: 1
+
+#include ".Xresources.d/colors"
